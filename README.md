@@ -1,4 +1,3 @@
-
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -89,11 +88,11 @@
   </section>
 
   <section class="cta">
-    <a href="tel:1234567896">📞 Book Free Trial Class</a>
+    <a href="tel:9841092311">📞 Book Free Trial Class</a>
   </section>
 
   <footer>
-    &copy; 2025 Smart Academic Institutions. All rights reserved.
+    &copy; 2016 Smart Academic Institutions. All rights reserved.
   </footer>
 
 </body>
