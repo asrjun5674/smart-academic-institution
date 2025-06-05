@@ -83,12 +83,9 @@
   </section>
 
   <section class="images">
-    <img src="https://source.unsplash.com/featured/?classroom" alt="Classroom">
-    <img src="https://source.unsplash.com/featured/?students" alt="Students">
-    <img src="https://source.unsplash.com/featured/?elearning" alt="E-learning">
-    <img src="https://source.unsplash.com/featured/?education" alt="Education">
-    <img src="https://source.unsplash.com/featured/?teacher" alt="Teacher">
-    <img src="https://source.unsplash.com/featured/?online-class" alt="Online Class">
+    <img src="https://images.unsplash.com/photo-1577896851231-70ef18881754?auto=format&fit=crop&w=600&q=80" alt="Classroom">
+    <img src="https://images.unsplash.com/photo-1588072432836-e10032774350?auto=format&fit=crop&w=600&q=80" alt="Students">
+    <img src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=600&q=80" alt="Student Focus">
   </section>
 
   <section class="cta">
