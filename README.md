@@ -1,99 +1,215 @@
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Smart Academic Institutions</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background: #f5f8fa;
-      color: #333;
-    }
-    header {
-      background: #2d3e50;
-      color: white;
-      padding: 20px;
-      text-align: center;
-    }
-    header h1 {
-      margin: 0;
-      font-size: 2em;
-    }
-    .about {
-      padding: 30px;
-      text-align: center;
-    }
-    .about h2 {
-      color: #2d3e50;
-    }
-    .images {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 15px;
-      padding: 20px;
-    }
-    .images img {
-      width: 300px;
-      height: 200px;
-      object-fit: cover;
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
-    .cta {
-      text-align: center;
-      margin: 30px;
-    }
-    .cta a {
-      background-color: #28a745;
-      color: white;
-      padding: 15px 25px;
-      font-size: 1.2em;
-      text-decoration: none;
-      border-radius: 8px;
-      transition: background 0.3s;
-    }
-    .cta a:hover {
-      background-color: #218838;
-    }
-    footer {
-      background: #2d3e50;
-      color: white;
-      text-align: center;
-      padding: 10px;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SAI - Smart Academic Institutions</title>
+<style>
+  body { font-family: "Segoe UI", sans-serif; margin:0; background:#f0f4f8; color:#333; }
+  header { background:#243b55; color:white; text-align:center; padding:20px; font-size:1.8em; }
+  section { padding:20px; text-align:center; }
+  button { background:#28a745; color:white; padding:12px 25px; border:none; border-radius:8px; cursor:pointer; font-size:1em; transition:0.3s; }
+  button:hover { background:#218838; }
+  .hidden { display:none; }
+  input, select { padding:10px; margin:10px 0; border-radius:5px; border:1px solid #ccc; width:70%; }
+  .ai-box { margin-top:20px; background:white; padding:20px; border-radius:10px; width:80%; margin:auto; box-shadow:0 4px 8px rgba(0,0,0,0.1); }
+  .ai-chat { height:200px; overflow-y:auto; text-align:left; padding:10px; border:1px solid #ddd; border-radius:8px; margin-bottom:10px; }
+  .meet-box { width:80%; margin:20px auto; }
+  iframe { width:100%; height:400px; border:none; border-radius:10px; }
+</style>
 </head>
 <body>
 
-  <header>
-    <h1>Smart Academic Institutions</h1>
-    <p>Empowering Learning with Technology</p>
-  </header>
+<header>SAI - Smart Academic Institutions</header>
 
-  <section class="about">
-    <h2>About Us</h2>
-    <p>
-      Smart Academic Institutions is a modern platform that helps students connect with expert teachers 
-      for personalized academic success. We offer subject-based learning, assessments, and doubt-clearing 
-      sessions through digital classrooms.
-    </p>
-  </section>
+<section id="demo-section">
+  <h2>🎓 Book Your Demo Class</h2>
+  <p>Choose your demo date:</p>
+  <input type="date" id="demo-date" min="2025-01-01" max="2035-12-31"><br>
+  <label>Time: 4:30 PM - 6:30 PM</label><br><br>
+  <button onclick="bookDemo()">Book Demo Date & Time</button>
+  <p id="demo-msg"></p>
+</section>
 
-  <section class="images">
-    <img src="https://images.unsplash.com/photo-1577896851231-70ef18881754?auto=format&fit=crop&w=600&q=80" alt="Classroom">
-    <img src="https://images.unsplash.com/photo-1588072432836-e10032774350?auto=format&fit=crop&w=600&q=80" alt="Students">
-    <img src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=600&q=80" alt="Student Focus">
-  </section>
+<section id="login-section" class="hidden">
+  <h2>Join SAI</h2>
+  <p>Enter your name:</p>
+  <input type="text" id="userName" placeholder="Your Name"><br><br>
+  <button onclick="loginUser()">Login</button>
+  <p id="login-msg"></p>
+</section>
 
-  <section class="cta">
-    <a href="tel:9841092311">📞 Book Free Trial Class</a>
-  </section>
+<section id="ai-section" class="hidden">
+  <h2>🤖 Welcome to SAI AI</h2>
+  <p id="welcomeText"></p>
+  <div class="ai-box">
+    <div class="ai-chat" id="chatBox">
+      <p><b>SAI AI:</b> Hi! I’m SAI AI. Ask me anything if your teacher isn’t available.</p>
+    </div>
+    <input type="text" id="userQuestion" placeholder="Type your question...">
+    <button onclick="askAI()">Ask</button><br><br>
+  </div>
+  <div class="meet-box">
+    <h3>📹 SAI Online Meet</h3>
+    <iframe src="https://meet.jit.si/SAI2025MEET" allow="camera; microphone; fullscreen"></iframe>
+    <p>Phone Join: <a href="tel:+911234567896">+91 1234567896</a></p>
+  </div>
+</section>
 
-  <footer>
-    &copy; 2016 Smart Academic Institutions. All rights reserved.
-  </footer>
+<script>
+let students = JSON.parse(localStorage.getItem("sai_students")) || [];
+let feePaid = false;
+let studentCode = "";
+let studentName = "";
+
+function bookDemo() {
+  const date = document.getElementById("demo-date").value;
+  if(!date) { alert("Select a date!"); return; }
+  document.getElementById("demo-msg").innerHTML = `🎉 Congrats! Demo booked on ${date} (4:30-6:30PM)`;
+  localStorage.setItem("demoDate", date);
+  setTimeout(()=>{
+    document.getElementById("demo-section").classList.add("hidden");
+    document.getElementById("login-section").classList.remove("hidden");
+  },2000);
+}
+
+function loginUser() {
+  const name = document.getElementById("userName").value.trim();
+  if(!name){ alert("Enter your name"); return; }
+  studentName = name;
+  studentCode = "DA"+Math.floor(Math.random()*90000+10000);
+  feePaid = false;
+  students.push({name:studentName, code:studentCode, date:localStorage.getItem("demoDate"), status:"Not Paid"});
+  localStorage.setItem("sai_students", JSON.stringify(students));
+  document.getElementById("login-msg").innerHTML = `Welcome ${name}! Your code is <b>${studentCode}</b>`;
+  setTimeout(()=>{
+    document.getElementById("login-section").classList.add("hidden");
+    document.getElementById("ai-section").classList.remove("hidden");
+    document.getElementById("welcomeText").innerText = `Hello ${name}! Ask your doubts here.`;
+  },2000);
+}
+
+function askAI() {
+  const q = document.getElementById("userQuestion").value.trim();
+  const chat = document.getElementById("chatBox");
+  if(!q) return;
+  chat.innerHTML += `<p><b>You:</b> ${q}</p>`;
+  if(!feePaid){
+    chat.innerHTML += `<p><b>SAI AI:</b> Fees not paid — you can’t use SAI AI now.</p>`;
+  } else {
+    chat.innerHTML += `<p><b>SAI AI:</b> Let me explain: [AI response]</p>`;
+  }
+  document.getElementById("userQuestion").value="";
+  chat.scrollTop=chat.scrollHeight;
+}
+</script>
+
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SAI - Smart Academic Institutions</title>
+<style>
+  body { font-family: "Segoe UI", sans-serif; margin:0; background:#f0f4f8; color:#333; }
+  header { background:#243b55; color:white; text-align:center; padding:20px; font-size:1.8em; }
+  section { padding:20px; text-align:center; }
+  button { background:#28a745; color:white; padding:12px 25px; border:none; border-radius:8px; cursor:pointer; font-size:1em; transition:0.3s; }
+  button:hover { background:#218838; }
+  .hidden { display:none; }
+  input, select { padding:10px; margin:10px 0; border-radius:5px; border:1px solid #ccc; width:70%; }
+  .ai-box { margin-top:20px; background:white; padding:20px; border-radius:10px; width:80%; margin:auto; box-shadow:0 4px 8px rgba(0,0,0,0.1); }
+  .ai-chat { height:200px; overflow-y:auto; text-align:left; padding:10px; border:1px solid #ddd; border-radius:8px; margin-bottom:10px; }
+  .meet-box { width:80%; margin:20px auto; }
+  iframe { width:100%; height:400px; border:none; border-radius:10px; }
+</style>
+</head>
+<body>
+
+<header>SAI - Smart Academic Institutions</header>
+
+<section id="demo-section">
+  <h2>🎓 Book Your Demo Class</h2>
+  <p>Choose your demo date:</p>
+  <input type="date" id="demo-date" min="2025-01-01" max="2035-12-31"><br>
+  <label>Time: 4:30 PM - 6:30 PM</label><br><br>
+  <button onclick="bookDemo()">Book Demo Date & Time</button>
+  <p id="demo-msg"></p>
+</section>
+
+<section id="login-section" class="hidden">
+  <h2>Join SAI</h2>
+  <p>Enter your name:</p>
+  <input type="text" id="userName" placeholder="Your Name"><br><br>
+  <button onclick="loginUser()">Login</button>
+  <p id="login-msg"></p>
+</section>
+
+<section id="ai-section" class="hidden">
+  <h2>🤖 Welcome to SAI AI</h2>
+  <p id="welcomeText"></p>
+  <div class="ai-box">
+    <div class="ai-chat" id="chatBox">
+      <p><b>SAI AI:</b> Hi! I’m SAI AI. Ask me anything if your teacher isn’t available.</p>
+    </div>
+    <input type="text" id="userQuestion" placeholder="Type your question...">
+    <button onclick="askAI()">Ask</button><br><br>
+  </div>
+  <div class="meet-box">
+    <h3>📹 SAI Online Meet</h3>
+    <iframe src="https://meet.jit.si/SAI2025MEET" allow="camera; microphone; fullscreen"></iframe>
+    <p>Phone Join: <a href="tel:+911234567896">+91 1234567896</a></p>
+  </div>
+</section>
+
+<script>
+let students = JSON.parse(localStorage.getItem("sai_students")) || [];
+let feePaid = false;
+let studentCode = "";
+let studentName = "";
+
+function bookDemo() {
+  const date = document.getElementById("demo-date").value;
+  if(!date) { alert("Select a date!"); return; }
+  document.getElementById("demo-msg").innerHTML = `🎉 Congrats! Demo booked on ${date} (4:30-6:30PM)`;
+  localStorage.setItem("demoDate", date);
+  setTimeout(()=>{
+    document.getElementById("demo-section").classList.add("hidden");
+    document.getElementById("login-section").classList.remove("hidden");
+  },2000);
+}
+
+function loginUser() {
+  const name = document.getElementById("userName").value.trim();
+  if(!name){ alert("Enter your name"); return; }
+  studentName = name;
+  studentCode = "DA"+Math.floor(Math.random()*90000+10000);
+  feePaid = false;
+  students.push({name:studentName, code:studentCode, date:localStorage.getItem("demoDate"), status:"Not Paid"});
+  localStorage.setItem("sai_students", JSON.stringify(students));
+  document.getElementById("login-msg").innerHTML = `Welcome ${name}! Your code is <b>${studentCode}</b>`;
+  setTimeout(()=>{
+    document.getElementById("login-section").classList.add("hidden");
+    document.getElementById("ai-section").classList.remove("hidden");
+    document.getElementById("welcomeText").innerText = `Hello ${name}! Ask your doubts here.`;
+  },2000);
+}
+
+function askAI() {
+  const q = document.getElementById("userQuestion").value.trim();
+  const chat = document.getElementById("chatBox");
+  if(!q) return;
+  chat.innerHTML += `<p><b>You:</b> ${q}</p>`;
+  if(!feePaid){
+    chat.innerHTML += `<p><b>SAI AI:</b> Fees not paid — you can’t use SAI AI now.</p>`;
+  } else {
+    chat.innerHTML += `<p><b>SAI AI:</b> Let me explain: [AI response]</p>`;
+  }
+  document.getElementById("userQuestion").value="";
+  chat.scrollTop=chat.scrollHeight;
+}
+</script>
 
 </body>
 </html>
