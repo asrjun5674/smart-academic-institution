@@ -15,6 +15,7 @@ button{cursor:pointer;}
 #demoSection{padding:20px;}
 .message-student{background:#DCF8C6;padding:5px;margin:5px;border-radius:5px;}
 .message-ai{background:#EAEAEA;padding:5px;margin:5px;border-radius:5px;}
+pre{background:#eee;padding:5px;border-radius:5px;overflow-x:auto;}
 </style>
 </head>
 <body>
@@ -42,7 +43,7 @@ button{cursor:pointer;}
 <iframe src="https://meet.jit.si/SAI2025MEET" width="100%" height="400px" allow="camera; microphone; fullscreen"></iframe>
 
 <script>
-const PEPLIXCITY_AI_KEY = "YOUR_OPENAI_API_KEY"; // Advanced SAI AI engine
+const PEPLIXCITY_AI_KEY = "YOUR_OPENAI_API_KEY"; // Peplixcity AI engine (ChatGPT logic)
 
 // --- BOOK DEMO ---
 function bookDemo(){
@@ -80,17 +81,16 @@ async function sendQuestion(){
   const chatContent = document.getElementById('chatContent');
   const nameInput = document.getElementById('studentName').value.trim();
 
-  // Show student message
   chatContent.innerHTML += `<div class="message-student"><b>${nameInput}:</b> ${question}</div>`;
   input.value=''; 
   chatContent.scrollTop = chatContent.scrollHeight;
 
-  // Log student question for admin
+  // Notify admin
   let aiLogs = JSON.parse(localStorage.getItem('aiLogs')||'[]');
   aiLogs.push({name: nameInput, question: question, time: new Date().toLocaleString()});
   localStorage.setItem('aiLogs', JSON.stringify(aiLogs));
 
-  // --- Call Peplixcity AI (OpenAI) ---
+  // --- Call Peplixcity AI ---
   try{
     const response = await fetch("https://api.openai.com/v1/chat/completions",{
       method:"POST",
@@ -101,14 +101,17 @@ async function sendQuestion(){
       body: JSON.stringify({
         model:"gpt-3.5-turbo",
         messages:[{role:"user", content: question}],
-        max_tokens:500
+        max_tokens:800
       })
     });
 
     const data = await response.json();
-    const answer = data.choices[0].message.content;
+    let answer = data.choices[0].message.content;
 
-    chatContent.innerHTML += `<div class="message-ai"><b>SAI AI:</b> ${answer}</div>`;
+    // Format code snippets nicely
+    answer = answer.replace(/```/g,'<pre>').replace(/\n/g,'<br>');
+
+    chatContent.innerHTML += `<div class="message-ai"><b>SAI AI:</b><br>${answer}</div>`;
     chatContent.scrollTop = chatContent.scrollHeight;
 
   }catch(err){
