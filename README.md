@@ -23,6 +23,7 @@ section { padding:20px; }
 <body>
 
 <header>SAI - Smart Academic Institutions (Student)</header>
+
 <nav>
   <button onclick="showSection('home')">Home</button>
   <button onclick="showSection('worksheets')">Worksheets</button>
@@ -31,8 +32,16 @@ section { padding:20px; }
 
 <section id="home">
   <h2>Welcome Student!</h2>
-  <p>Book your demo class first. After demo, login by your name to access worksheets and SAI AI.</p>
-  <button onclick="bookDemo()">Book Demo Class</button>
+  <div id="demo-section">
+    <p>Book your demo class first. After demo, login by your name to access worksheets and SAI AI.</p>
+    <button onclick="bookDemo()">Book Demo Class</button>
+  </div>
+
+  <div id="login-section" style="display:none;">
+    <p>Login with your name to access worksheets and SAI AI:</p>
+    <input type="text" id="login-name" placeholder="Enter your name">
+    <button onclick="loginStudent()">Login</button>
+  </div>
 </section>
 
 <section id="worksheets" style="display:none;">
@@ -79,30 +88,45 @@ section { padding:20px; }
 </div>
 
 <script>
-// --- DEMO BOOKING & LOGIN ---
+// --- DEMO & LOGIN ---
 let studentName = '';
 let demoBooked = false;
 let conversation = [];
 
 function bookDemo(){
-  studentName = prompt("Enter your Name to book Demo Class:");
-  if(studentName){
-    let demoTime = prompt("Enter your preferred demo time (e.g., 4:30 PM - 6:30 PM):");
-    alert(`Demo class booked for ${studentName} at ${demoTime}`);
+  let name = prompt("Enter your Name to book Demo Class:");
+  if(name){
+    let demoTime = prompt("Enter preferred demo time (e.g., 4:30 PM - 6:30 PM):");
+    alert(`Demo booked for ${name} at ${demoTime}`);
 
-    demoBooked = true;
-
-    // Add to dynamic student list in localStorage
+    // Save student for Admin
     let students = JSON.parse(localStorage.getItem('students')||'[]');
-    if(!students.some(s => s.name === studentName)){
-      students.push({name: studentName, demoTime: demoTime, paid:false, saiStudent:'No'});
+    if(!students.some(s => s.name === name)){
+      students.push({name:name, demoTime:demoTime, paid:false, saiStudent:'No'});
       localStorage.setItem('students', JSON.stringify(students));
     }
+
+    // Show login
+    document.getElementById('demo-section').style.display = 'none';
+    document.getElementById('login-section').style.display = 'block';
+  }
+}
+
+function loginStudent(){
+  let loginName = document.getElementById('login-name').value.trim();
+  let students = JSON.parse(localStorage.getItem('students')||'[]');
+  if(students.some(s => s.name === loginName)){
+    studentName = loginName;
+    demoBooked = true;
+    alert(`Welcome ${studentName}! You can now access worksheets and SAI AI.`);
+    showSection('worksheets');
+  } else {
+    alert("Name not found. Please book a demo first.");
   }
 }
 
 function showSection(section){
-  if(!demoBooked && section!=='home'){ alert("Please book demo first!"); return; }
+  if(!demoBooked && section!=='home'){ alert("Please login first!"); return; }
   document.querySelectorAll('section').forEach(s=>s.style.display='none');
   document.getElementById(section).style.display='block';
 }
@@ -124,7 +148,6 @@ function sendAI(){
   msgDiv.innerHTML = `<b>${studentName}:</b> ${input}`;
   messages.appendChild(msgDiv);
 
-  // GPT-like reply simulation
   let reply = generateSAIReply(input, conversation);
 
   conversation.push({role:'assistant', content: reply});
@@ -133,21 +156,20 @@ function sendAI(){
   messages.appendChild(aiDiv);
   document.getElementById('ai-input').value='';
 
-  // Save to shared AI log for Admin
+  // Notify Admin (localStorage)
   let aiLogs = JSON.parse(localStorage.getItem('aiLogs')||'[]');
   aiLogs.push({name: studentName, question: input, time: new Date().toLocaleTimeString()});
   localStorage.setItem('aiLogs', JSON.stringify(aiLogs));
 }
 
-// GPT-like logic
 function generateSAIReply(input){
   input = input.toLowerCase();
-  if(input.includes("solve") || input.includes("math")) return "Sure! Let's solve this step by step...";
-  if(input.includes("physics")) return "Physics Answer: Step-by-step explanation here.";
-  if(input.includes("chemistry")) return "Chemistry Answer: Step-by-step explanation here.";
-  if(input.includes("biology")) return "Biology Answer: Step-by-step explanation here.";
-  if(input.includes("history") || input.includes("geography") || input.includes("civics")) return "Social Science Answer: explanation.";
-  return "I am SAI AI. You can ask questions about worksheets.";
+  if(input.includes("solve") || input.includes("math") || input.includes("addition") || input.includes("division")) return "Sure! Let's solve this step by step...";
+  if(input.includes("physics")) return "Physics Answer: Step-by-step explanation: [simulate calculation here]";
+  if(input.includes("chemistry")) return "Chemistry Answer: Step-by-step explanation: [simulate reaction here]";
+  if(input.includes("biology")) return "Biology Answer: Step-by-step explanation: [simulate explanation here]";
+  if(input.includes("history") || input.includes("geography") || input.includes("civics") || input.includes("social")) return "Social Science Answer: Explanation with examples...";
+  return "I am SAI AI. You can ask me questions about your worksheets or lessons.";
 }
 
 // --- Worksheets ---
@@ -164,6 +186,16 @@ const subjectsPerGrade = {
   10:["English","Math","Physics","Chemistry","Biology","History","Civics","Geography"]
 };
 
+function loadSubjects(){
+  const grade = document.getElementById('gradeSelect').value;
+  const subjectSelect = document.getElementById('subjectSelect');
+  subjectSelect.innerHTML = "<option value=''>--Select Subject--</option>";
+  if(subjectsPerGrade[grade]){
+    subjectsPerGrade[grade].forEach(sub=>{ subjectSelect.innerHTML += `<option value='${sub}'>${sub}</option>`; });
+  }
+  document.getElementById('worksheetContainer').innerHTML = "";
+}
+
 const sampleQuestions = {
   "Math":["1+1=?","2+3=?","5-2=?","3*2=?","10/2=?"],
   "Physics":["State Newton's first law","Define force","What is gravity?","Explain motion","What is speed?"],
@@ -178,23 +210,13 @@ const sampleQuestions = {
   "GK":["Who is president?","Capital of India?","Flag colors?","National animal?","National bird"]
 };
 
-function loadSubjects(){
-  const grade = document.getElementById('gradeSelect').value;
-  const subjectSelect = document.getElementById('subjectSelect');
-  subjectSelect.innerHTML = "<option value=''>--Select Subject--</option>";
-  if(subjectsPerGrade[grade]) subjectsPerGrade[grade].forEach(s => {
-    subjectSelect.innerHTML += `<option value="${s}">${s}</option>`;
-  });
-  document.getElementById('worksheetContainer').innerHTML="";
-}
-
 function loadWorksheet(){
   const subject = document.getElementById('subjectSelect').value;
   const container = document.getElementById('worksheetContainer');
-  container.innerHTML="";
+  container.innerHTML = "";
   if(sampleQuestions[subject]){
     let html = "<ol>";
-    sampleQuestions[subject].forEach(q => html += `<li>${q}</li>`);
+    sampleQuestions[subject].forEach(q=>{ html += `<li>${q}</li>`; });
     html += "</ol>";
     container.innerHTML = html;
   }
