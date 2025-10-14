@@ -13,6 +13,8 @@ button{cursor:pointer;}
 #chatBox input{flex:1;padding:5px;}
 #chatBox button{padding:5px;}
 #demoSection{padding:20px;}
+.message-student{background:#DCF8C6;padding:5px;margin:5px;border-radius:5px;}
+.message-ai{background:#EAEAEA;padding:5px;margin:5px;border-radius:5px;}
 </style>
 </head>
 <body>
@@ -26,7 +28,7 @@ button{cursor:pointer;}
 <p id="demoMsg"></p>
 </section>
 
-<button id="saiBtn" style="position:fixed; bottom:20px; right:20px; width:60px; height:60px; border-radius:50%; background:#1ABC9C; color:white; border:none;">SAI AI</button>
+<button id="saiBtn" style="position:fixed; bottom:20px; right:20px; width:60px; height:60px; border-radius:50%; background:#1ABC9C; color:white; border:none; font-weight:bold;">SAI AI</button>
 
 <div id="chatBox">
   <div id="chatContent"></div>
@@ -40,7 +42,7 @@ button{cursor:pointer;}
 <iframe src="https://meet.jit.si/SAI2025MEET" width="100%" height="400px" allow="camera; microphone; fullscreen"></iframe>
 
 <script>
-const OPENAI_API_KEY = "YOUR_OPENAI_API_KEY"; // replace with your OpenAI API key
+const PEPLIXCITY_AI_KEY = "YOUR_OPENAI_API_KEY"; // Advanced SAI AI engine
 
 // --- BOOK DEMO ---
 function bookDemo(){
@@ -55,7 +57,7 @@ function bookDemo(){
   if(!studentStatus[nameInput]) studentStatus[nameInput] = {paid:false, saiStudent:false};
   localStorage.setItem('studentStatus', JSON.stringify(studentStatus));
 
-  document.getElementById('demoMsg').innerHTML = `Demo booked for ${nameInput}. Please wait for admin approval.`;
+  document.getElementById('demoMsg').innerHTML = `Demo booked for <b>${nameInput}</b>. Please wait for admin approval.`;
 }
 
 // --- SAI AI CHAT ---
@@ -74,35 +76,44 @@ async function sendQuestion(){
   const input = document.getElementById('chatInput');
   const question = input.value.trim();
   if(!question) return;
+
   const chatContent = document.getElementById('chatContent');
   const nameInput = document.getElementById('studentName').value.trim();
 
-  chatContent.innerHTML += `<p><b>${nameInput}:</b> ${question}</p>`;
-  input.value='';
+  // Show student message
+  chatContent.innerHTML += `<div class="message-student"><b>${nameInput}:</b> ${question}</div>`;
+  input.value=''; 
   chatContent.scrollTop = chatContent.scrollHeight;
 
-  // Notify admin
+  // Log student question for admin
   let aiLogs = JSON.parse(localStorage.getItem('aiLogs')||'[]');
-  aiLogs.push({name:nameInput, question:question, time:new Date().toLocaleString()});
+  aiLogs.push({name: nameInput, question: question, time: new Date().toLocaleString()});
   localStorage.setItem('aiLogs', JSON.stringify(aiLogs));
 
-  // Call OpenAI API
-  const response = await fetch("https://api.openai.com/v1/chat/completions", {
-    method:"POST",
-    headers:{
-      "Content-Type":"application/json",
-      "Authorization": `Bearer ${OPENAI_API_KEY}`
-    },
-    body: JSON.stringify({
-      model:"gpt-3.5-turbo",
-      messages:[{role:"user", content: question}],
-      max_tokens:500
-    })
-  });
-  const data = await response.json();
-  const answer = data.choices[0].message.content;
-  chatContent.innerHTML += `<p><b>SAI AI:</b> ${answer}</p>`;
-  chatContent.scrollTop = chatContent.scrollHeight;
+  // --- Call Peplixcity AI (OpenAI) ---
+  try{
+    const response = await fetch("https://api.openai.com/v1/chat/completions",{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json",
+        "Authorization": `Bearer ${PEPLIXCITY_AI_KEY}`
+      },
+      body: JSON.stringify({
+        model:"gpt-3.5-turbo",
+        messages:[{role:"user", content: question}],
+        max_tokens:500
+      })
+    });
+
+    const data = await response.json();
+    const answer = data.choices[0].message.content;
+
+    chatContent.innerHTML += `<div class="message-ai"><b>SAI AI:</b> ${answer}</div>`;
+    chatContent.scrollTop = chatContent.scrollHeight;
+
+  }catch(err){
+    chatContent.innerHTML += `<div class="message-ai"><b>SAI AI:</b> Sorry, I am currently unavailable. Please try later.</div>`;
+  }
 }
 </script>
 </body>
