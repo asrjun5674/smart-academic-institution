@@ -17,8 +17,6 @@ section { padding:20px; }
 #ai-messages { max-height:300px; overflow:auto; margin-bottom:10px;}
 #ai-input { width:80%; padding:5px;}
 #ai-send { padding:5px 10px; background:#E74C3C; color:white; border:none; cursor:pointer; }
-.student-list, .worksheet { background:white; padding:15px; border-radius:10px; margin-bottom:20px; box-shadow:0 0 5px rgba(0,0,0,0.1);}
-h2 { color:#2E86C1;}
 .grade-select, .subject-select { margin-bottom:15px; padding:5px;}
 </style>
 </head>
@@ -84,12 +82,20 @@ h2 { color:#2E86C1;}
 // --- DEMO BOOKING & LOGIN ---
 let studentName = '';
 let demoBooked = false;
+let conversation = [];
 
 function bookDemo(){
   studentName = prompt("Enter your Name to book Demo Class:");
   if(studentName){
     alert(`Demo class booked for ${studentName} at 4:30 PM - 6:30 PM`);
     demoBooked = true;
+
+    // Add to dynamic student list in Admin (for demo purpose, using localStorage)
+    let students = JSON.parse(localStorage.getItem('students')||'[]');
+    if(!students.includes(studentName)){
+      students.push(studentName);
+      localStorage.setItem('students', JSON.stringify(students));
+    }
   }
 }
 
@@ -109,31 +115,44 @@ function toggleAI(){
 function sendAI(){
   let input = document.getElementById('ai-input').value.trim();
   if(!input) return;
+
+  conversation.push({role:'user', content: input});
   let messages = document.getElementById('ai-messages');
   let msgDiv = document.createElement('div');
   msgDiv.innerHTML = `<b>${studentName}:</b> ${input}`;
   messages.appendChild(msgDiv);
 
-  let reply = '';
-  if(!demoBooked){
-    reply = "Please attend demo class first.";
-  } else {
-    let keyword = input.toLowerCase();
-    if(keyword.includes("math") || keyword.includes("addition") || keyword.includes("division")) reply = "Math Answer: Follow steps carefully...";
-    else if(keyword.includes("physics")) reply = "Physics Answer: Step by step explanation...";
-    else if(keyword.includes("chemistry")) reply = "Chemistry Answer: Step by step explanation...";
-    else if(keyword.includes("biology")) reply = "Biology Answer: Step by step explanation...";
-    else if(keyword.includes("history") || keyword.includes("geography") || keyword.includes("civics")) reply = "Social Science Answer: Refer to concepts...";
-    else reply = "I am SAI AI. Please ask your question properly.";
-  }
+  // GPT-like reply simulation
+  let reply = generateSAIReply(input, conversation);
 
+  conversation.push({role:'assistant', content: reply});
   let aiDiv = document.createElement('div');
   aiDiv.innerHTML = `<b>SAI AI:</b> ${reply}`;
   messages.appendChild(aiDiv);
   document.getElementById('ai-input').value='';
 
-  // notify admin (simulate)
-  console.log(`${studentName} is using SAI AI: ${input}`);
+  // Notify Admin (simulate)
+  let aiLogs = JSON.parse(localStorage.getItem('aiLogs')||'[]');
+  aiLogs.push({name: studentName, question: input, time: new Date().toLocaleTimeString()});
+  localStorage.setItem('aiLogs', JSON.stringify(aiLogs));
+}
+
+// Simulated GPT-like AI logic
+function generateSAIReply(input, conversation){
+  input = input.toLowerCase();
+  if(input.includes("solve") || input.includes("math") || input.includes("addition") || input.includes("division")){
+      return "Sure! Let's solve this step by step...";
+  } else if(input.includes("physics")){
+      return "Physics Answer: Step-by-step explanation: [simulate calculation here]";
+  } else if(input.includes("chemistry")){
+      return "Chemistry Answer: Step-by-step explanation: [simulate reaction here]";
+  } else if(input.includes("biology")){
+      return "Biology Answer: Step-by-step explanation: [simulate explanation here]";
+  } else if(input.includes("history") || input.includes("geography") || input.includes("civics") || input.includes("social")){
+      return "Social Science Answer: Explanation with examples...";
+  } else {
+      return "I am SAI AI. You can ask me questions about your worksheets or lessons.";
+  }
 }
 
 // --- Worksheets ---
@@ -160,7 +179,7 @@ function loadSubjects(){
   document.getElementById('worksheetContainer').innerHTML = "";
 }
 
-// For demo, sample 5 questions per subject. Can expand to 20 easily
+// Sample questions
 const sampleQuestions = {
   "Math":["1+1=?","2+3=?","5-2=?","3*2=?","10/2=?"],
   "Physics":["State Newton's first law","Define force","What is gravity?","Explain motion","What is speed?"],
@@ -187,5 +206,6 @@ function loadWorksheet(){
   }
 }
 </script>
+
 </body>
 </html>
