@@ -79,26 +79,32 @@ section { padding:20px; }
 </div>
 
 <script>
-// --- DEMO BOOKING & LOGIN ---
 let studentName = '';
 let demoBooked = false;
 let conversation = [];
 
+// --- Demo Booking ---
 function bookDemo(){
   studentName = prompt("Enter your Name to book Demo Class:");
-  if(studentName){
-    alert(Demo class booked for ${studentName} at 4:30 PM - 6:30 PM);
-    demoBooked = true;
+  if(!studentName) return;
 
-    // Add to dynamic student list in Admin (for demo purpose, using localStorage)
-    let students = JSON.parse(localStorage.getItem('students')||'[]');
-    if(!students.includes(studentName)){
-      students.push(studentName);
-      localStorage.setItem('students', JSON.stringify(students));
-    }
+  let demoDate = prompt("Enter Demo Date (e.g., 2025-10-20):");
+  let demoTime = prompt("Enter Demo Time (e.g., 4:30 PM - 6:30 PM):");
+  if(!demoDate || !demoTime) return;
+
+  alert(`Demo class booked for ${studentName} on ${demoDate} at ${demoTime}`);
+  demoBooked = true;
+
+  // Store student in localStorage for Admin
+  let students = JSON.parse(localStorage.getItem('students')||'[]');
+  let exists = students.find(s => s.name === studentName);
+  if(!exists){
+    students.push({name: studentName, demoDate, demoTime});
+    localStorage.setItem('students', JSON.stringify(students));
   }
 }
 
+// --- Navigation ---
 function showSection(section){
   if(!demoBooked && section!=='home'){ alert("Please book demo first!"); return; }
   document.querySelectorAll('section').forEach(s=>s.style.display='none');
@@ -119,40 +125,31 @@ function sendAI(){
   conversation.push({role:'user', content: input});
   let messages = document.getElementById('ai-messages');
   let msgDiv = document.createElement('div');
-  msgDiv.innerHTML = <b>${studentName}:</b> ${input};
+  msgDiv.innerHTML = `<b>${studentName}:</b> ${input}`;
   messages.appendChild(msgDiv);
 
-  // GPT-like reply simulation
   let reply = generateSAIReply(input, conversation);
-
   conversation.push({role:'assistant', content: reply});
   let aiDiv = document.createElement('div');
-  aiDiv.innerHTML = <b>SAI AI:</b> ${reply};
+  aiDiv.innerHTML = `<b>SAI AI:</b> ${reply}`;
   messages.appendChild(aiDiv);
   document.getElementById('ai-input').value='';
 
-  // Notify Admin (simulate)
+  // Save AI logs for Admin
   let aiLogs = JSON.parse(localStorage.getItem('aiLogs')||'[]');
-  aiLogs.push({name: studentName, question: input, time: new Date().toLocaleTimeString()});
+  aiLogs.push({name: studentName, question: input, time: new Date().toLocaleString()});
   localStorage.setItem('aiLogs', JSON.stringify(aiLogs));
 }
 
-// Simulated GPT-like AI logic
-function generateSAIReply(input, conversation){
+// --- AI Logic ---
+function generateSAIReply(input){
   input = input.toLowerCase();
-  if(input.includes("solve") || input.includes("math") || input.includes("addition") || input.includes("division")){
-      return "Sure! Let's solve this step by step...";
-  } else if(input.includes("physics")){
-      return "Physics Answer: Step-by-step explanation: [simulate calculation here]";
-  } else if(input.includes("chemistry")){
-      return "Chemistry Answer: Step-by-step explanation: [simulate reaction here]";
-  } else if(input.includes("biology")){
-      return "Biology Answer: Step-by-step explanation: [simulate explanation here]";
-  } else if(input.includes("history") || input.includes("geography") || input.includes("civics") || input.includes("social")){
-      return "Social Science Answer: Explanation with examples...";
-  } else {
-      return "I am SAI AI. You can ask me questions about your worksheets or lessons.";
-  }
+  if(input.includes("solve") || input.includes("math")) return "Let's solve this step by step...";
+  if(input.includes("physics")) return "Physics answer: step-by-step explanation...";
+  if(input.includes("chemistry")) return "Chemistry answer: step-by-step explanation...";
+  if(input.includes("biology")) return "Biology answer: step-by-step explanation...";
+  if(input.includes("history") || input.includes("geography") || input.includes("social")) return "Social Science answer with examples...";
+  return "I am SAI AI. Ask me questions about worksheets or lessons.";
 }
 
 // --- Worksheets ---
@@ -169,17 +166,6 @@ const subjectsPerGrade = {
   10:["English","Math","Physics","Chemistry","Biology","History","Civics","Geography"]
 };
 
-function loadSubjects(){
-  const grade = document.getElementById('gradeSelect').value;
-  const subjectSelect = document.getElementById('subjectSelect');
-  subjectSelect.innerHTML = "<option value=''>--Select Subject--</option>";
-  if(subjectsPerGrade[grade]){
-    subjectsPerGrade[grade].forEach(sub=>{ subjectSelect.innerHTML += <option value='${sub}'>${sub}</option>; });
-  }
-  document.getElementById('worksheetContainer').innerHTML = "";
-}
-
-// Sample questions
 const sampleQuestions = {
   "Math":["1+1=?","2+3=?","5-2=?","3*2=?","10/2=?"],
   "Physics":["State Newton's first law","Define force","What is gravity?","Explain motion","What is speed?"],
@@ -191,8 +177,18 @@ const sampleQuestions = {
   "Geography":["Name continents","Name oceans","What is river?","Define mountain","What is climate?"],
   "Science":["What is matter?","What is energy?","Define force","What is light?","What is magnet?"],
   "Social Studies":["Define society","Name 3 religions","What is economy?","Explain culture","Define government"],
-  "GK":["Who is president?","Capital of India?","Flag colors?","National animal?","National bird?"]
+  "GK":["Who is president?","Capital of India?","Flag colors?","National animal?","National bird"]
 };
+
+function loadSubjects(){
+  const grade = document.getElementById('gradeSelect').value;
+  const subjectSelect = document.getElementById('subjectSelect');
+  subjectSelect.innerHTML = "<option value=''>--Select Subject--</option>";
+  if(subjectsPerGrade[grade]){
+    subjectsPerGrade[grade].forEach(sub=>{ subjectSelect.innerHTML += `<option value='${sub}'>${sub}</option>`; });
+  }
+  document.getElementById('worksheetContainer').innerHTML = "";
+}
 
 function loadWorksheet(){
   const subject = document.getElementById('subjectSelect').value;
@@ -200,12 +196,11 @@ function loadWorksheet(){
   container.innerHTML = "";
   if(sampleQuestions[subject]){
     let html = "<ol>";
-    sampleQuestions[subject].forEach(q=>{ html += <li>${q}</li>; });
+    sampleQuestions[subject].forEach(q=>{ html += `<li>${q}</li>`; });
     html += "</ol>";
     container.innerHTML = html;
   }
 }
 </script>
-
 </body>
-</html> 
+</html>
