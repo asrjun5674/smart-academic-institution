@@ -1,4 +1,4 @@
-
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -79,32 +79,28 @@ section { padding:20px; }
 </div>
 
 <script>
+// --- DEMO BOOKING & LOGIN ---
 let studentName = '';
 let demoBooked = false;
 let conversation = [];
 
-// --- Demo Booking ---
 function bookDemo(){
   studentName = prompt("Enter your Name to book Demo Class:");
-  if(!studentName) return;
+  if(studentName){
+    let demoTime = prompt("Enter your preferred demo time (e.g., 4:30 PM - 6:30 PM):");
+    alert(`Demo class booked for ${studentName} at ${demoTime}`);
 
-  let demoDate = prompt("Enter Demo Date (e.g., 2025-10-20):");
-  let demoTime = prompt("Enter Demo Time (e.g., 4:30 PM - 6:30 PM):");
-  if(!demoDate || !demoTime) return;
+    demoBooked = true;
 
-  alert(`Demo class booked for ${studentName} on ${demoDate} at ${demoTime}`);
-  demoBooked = true;
-
-  // Store student in localStorage for Admin
-  let students = JSON.parse(localStorage.getItem('students')||'[]');
-  let exists = students.find(s => s.name === studentName);
-  if(!exists){
-    students.push({name: studentName, demoDate, demoTime});
-    localStorage.setItem('students', JSON.stringify(students));
+    // Add to dynamic student list in localStorage
+    let students = JSON.parse(localStorage.getItem('students')||'[]');
+    if(!students.some(s => s.name === studentName)){
+      students.push({name: studentName, demoTime: demoTime, paid:false, saiStudent:'No'});
+      localStorage.setItem('students', JSON.stringify(students));
+    }
   }
 }
 
-// --- Navigation ---
 function showSection(section){
   if(!demoBooked && section!=='home'){ alert("Please book demo first!"); return; }
   document.querySelectorAll('section').forEach(s=>s.style.display='none');
@@ -128,41 +124,43 @@ function sendAI(){
   msgDiv.innerHTML = `<b>${studentName}:</b> ${input}`;
   messages.appendChild(msgDiv);
 
+  // GPT-like reply simulation
   let reply = generateSAIReply(input, conversation);
+
   conversation.push({role:'assistant', content: reply});
   let aiDiv = document.createElement('div');
   aiDiv.innerHTML = `<b>SAI AI:</b> ${reply}`;
   messages.appendChild(aiDiv);
   document.getElementById('ai-input').value='';
 
-  // Save AI logs for Admin
+  // Save to shared AI log for Admin
   let aiLogs = JSON.parse(localStorage.getItem('aiLogs')||'[]');
-  aiLogs.push({name: studentName, question: input, time: new Date().toLocaleString()});
+  aiLogs.push({name: studentName, question: input, time: new Date().toLocaleTimeString()});
   localStorage.setItem('aiLogs', JSON.stringify(aiLogs));
 }
 
-// --- AI Logic ---
+// GPT-like logic
 function generateSAIReply(input){
   input = input.toLowerCase();
-  if(input.includes("solve") || input.includes("math")) return "Let's solve this step by step...";
-  if(input.includes("physics")) return "Physics answer: step-by-step explanation...";
-  if(input.includes("chemistry")) return "Chemistry answer: step-by-step explanation...";
-  if(input.includes("biology")) return "Biology answer: step-by-step explanation...";
-  if(input.includes("history") || input.includes("geography") || input.includes("social")) return "Social Science answer with examples...";
-  return "I am SAI AI. Ask me questions about worksheets or lessons.";
+  if(input.includes("solve") || input.includes("math")) return "Sure! Let's solve this step by step...";
+  if(input.includes("physics")) return "Physics Answer: Step-by-step explanation here.";
+  if(input.includes("chemistry")) return "Chemistry Answer: Step-by-step explanation here.";
+  if(input.includes("biology")) return "Biology Answer: Step-by-step explanation here.";
+  if(input.includes("history") || input.includes("geography") || input.includes("civics")) return "Social Science Answer: explanation.";
+  return "I am SAI AI. You can ask questions about worksheets.";
 }
 
 // --- Worksheets ---
 const subjectsPerGrade = {
-  1: ["English","Math","Science","Social Studies","GK"],
-  2: ["English","Math","Science","Social Studies","GK"],
-  3: ["English","Math","Science","Social Studies","GK"],
-  4: ["English","Math","Science","Social Studies","GK"],
-  5: ["English","Math","Science","Social Studies","GK"],
-  6: ["English","Math","Physics","Chemistry","Biology","History","Civics","Geography"],
-  7: ["English","Math","Physics","Chemistry","Biology","History","Civics","Geography"],
-  8: ["English","Math","Physics","Chemistry","Biology","History","Civics","Geography"],
-  9: ["English","Math","Physics","Chemistry","Biology","History","Civics","Geography"],
+  1:["English","Math","Science","Social Studies","GK"],
+  2:["English","Math","Science","Social Studies","GK"],
+  3:["English","Math","Science","Social Studies","GK"],
+  4:["English","Math","Science","Social Studies","GK"],
+  5:["English","Math","Science","Social Studies","GK"],
+  6:["English","Math","Physics","Chemistry","Biology","History","Civics","Geography"],
+  7:["English","Math","Physics","Chemistry","Biology","History","Civics","Geography"],
+  8:["English","Math","Physics","Chemistry","Biology","History","Civics","Geography"],
+  9:["English","Math","Physics","Chemistry","Biology","History","Civics","Geography"],
   10:["English","Math","Physics","Chemistry","Biology","History","Civics","Geography"]
 };
 
@@ -184,23 +182,24 @@ function loadSubjects(){
   const grade = document.getElementById('gradeSelect').value;
   const subjectSelect = document.getElementById('subjectSelect');
   subjectSelect.innerHTML = "<option value=''>--Select Subject--</option>";
-  if(subjectsPerGrade[grade]){
-    subjectsPerGrade[grade].forEach(sub=>{ subjectSelect.innerHTML += `<option value='${sub}'>${sub}</option>`; });
-  }
-  document.getElementById('worksheetContainer').innerHTML = "";
+  if(subjectsPerGrade[grade]) subjectsPerGrade[grade].forEach(s => {
+    subjectSelect.innerHTML += `<option value="${s}">${s}</option>`;
+  });
+  document.getElementById('worksheetContainer').innerHTML="";
 }
 
 function loadWorksheet(){
   const subject = document.getElementById('subjectSelect').value;
   const container = document.getElementById('worksheetContainer');
-  container.innerHTML = "";
+  container.innerHTML="";
   if(sampleQuestions[subject]){
     let html = "<ol>";
-    sampleQuestions[subject].forEach(q=>{ html += `<li>${q}</li>`; });
+    sampleQuestions[subject].forEach(q => html += `<li>${q}</li>`);
     html += "</ol>";
     container.innerHTML = html;
   }
 }
 </script>
+
 </body>
 </html>
