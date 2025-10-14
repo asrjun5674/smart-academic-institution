@@ -1,182 +1,130 @@
 
 <html lang="en">
 <head>
-<meta charset="utf-8" />
+<meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>SAI - Smart Academic Institutions (Student)</title>
+<title>SAI - Student — Smart Academic Institutions</title>
 <style>
-  :root{--bg:#f0f6fb;--card:#fff;--brand:#0b63c4;--accent:#00b894}
-  body{margin:0;font-family:Inter,Segoe UI,Arial;background:var(--bg);color:#102233}
-  header{background:linear-gradient(90deg,#0b63c4,#1976d2);color:white;padding:18px;text-align:center;font-size:1.3rem}
-  .wrap{max-width:1100px;margin:18px auto;padding:12px}
-  .card{background:var(--card);border-radius:12px;padding:14px;box-shadow:0 6px 30px rgba(3,13,26,0.06);margin-bottom:12px}
-  label{display:block;margin:8px 0;font-weight:600}
-  input[type="text"], input[type="date"], select, textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #d8e6f2}
-  button{background:linear-gradient(90deg,var(--accent),#00a3d1);color:#00121a;border:none;padding:10px 14px;border-radius:8px;cursor:pointer;font-weight:700}
-  button.ghost{background:#fff;border:1px solid #d8e6f2}
-  .muted{color:#6b7a86;font-size:0.95rem}
-  .hidden{display:none}
-  /* layout */
-  .row{display:flex;gap:12px}
-  .col{flex:1}
-  .sidebar{width:320px}
-  @media(max-width:980px){ .row{flex-direction:column}.sidebar{width:100%} }
-  /* chat */
-  .floating-sai{position:fixed;right:22px;bottom:22px;width:64px;height:64px;border-radius:50%;
-              background:linear-gradient(45deg,#00c4a7,#00a3d1);display:flex;align-items:center;justify-content:center;
-              color:#00121a;font-weight:800;font-size:18px;cursor:pointer;box-shadow:0 8px 24px rgba(3,13,26,0.25);z-index:999}
-  .chat-modal{position:fixed;right:22px;bottom:100px;width:360px;background:white;border-radius:12px;padding:10px;
-              box-shadow:0 16px 40px rgba(3,13,26,0.2);z-index:1000}
-  .chat-window{height:260px;overflow:auto;padding:8px;border-radius:8px;border:1px solid #eef6fb;background:#fbfeff}
-  .msg{margin:8px 0;padding:8px;border-radius:10px;max-width:78%}
-  .msg.user{margin-left:auto;background:#d9e8ff;color:#052a66}
-  .msg.ai{margin-right:auto;background:#e9f7f5;color:#023a3b}
-  /* worksheet */
-  .worksheet q-list{display:block}
-  .question {background:#fcfeff;border:1px solid #eef6fb;padding:10px;border-radius:8px;margin:8px 0}
-  .btn-small{padding:6px 10px;border-radius:8px;border:none;background:#007bff;color:white;cursor:pointer}
-  .answers{background:#f7fbfc;padding:10px;border-radius:8px;border:1px solid #e6f3f8}
-  .badge{display:inline-block;padding:6px 10px;border-radius:999px;background:#eef7ff;color:#023a69;font-weight:700}
+:root{--bg:#f6fbff;--card:#fff;--brand:#0b63c4;--accent:#00b894}
+body{margin:0;font-family:Inter,Segoe UI,Arial;background:var(--bg);color:#112}
+header{background:linear-gradient(90deg,#0b63c4,#1976d2);color:white;padding:14px;text-align:center;font-size:1.2rem}
+.wrap{max-width:1100px;margin:18px auto;padding:12px}
+.card{background:var(--card);border-radius:10px;padding:12px;box-shadow:0 8px 30px rgba(3,13,26,0.06);margin-bottom:12px}
+.row{display:flex;gap:12px}
+.col{flex:1}
+.sidebar{width:320px}
+@media(max-width:980px){.row{flex-direction:column}.sidebar{width:100%}}
+select,input,textarea{padding:8px;border-radius:6px;border:1px solid #dbeaf7;width:100%}
+button{background:linear-gradient(90deg,var(--accent),#00a3d1);color:#00121a;border:none;padding:8px 12px;border-radius:8px;cursor:pointer}
+button.ghost{background:#fff;border:1px solid #dbeaf7}
+.floating-sai{position:fixed;right:20px;bottom:20px;width:64px;height:64px;border-radius:50%;background:linear-gradient(45deg,#00c4a7,#00a3d1);display:flex;align-items:center;justify-content:center;color:#00121a;font-weight:800;cursor:pointer;z-index:999}
+.chat-modal{position:fixed;right:20px;bottom:100px;width:380px;background:white;border-radius:10px;padding:10px;box-shadow:0 12px 36px rgba(3,13,26,0.18);z-index:1000}
+.chat-window{height:260px;overflow:auto;padding:8px;border-radius:8px;background:#fbfeff;border:1px solid #e7f6fb}
+.msg{margin:8px 0;padding:8px;border-radius:10px}
+.msg.user{background:#d9e8ff;color:#052a66;text-align:right}
+.msg.ai{background:#e9f7f5;color:#023a3b;text-align:left}
+.question{background:#fcfeff;border:1px solid #eef6fb;padding:10px;border-radius:8px;margin:8px 0}
+.q-actions{margin-top:8px;display:flex;gap:8px;flex-wrap:wrap}
+.badge{display:inline-block;padding:6px 8px;border-radius:999px;background:#eef7ff;color:#023a69;font-weight:700}
+.work-area{margin-top:12px}
+.meet-frame{width:100%;height:420px;border-radius:8px;border:1px solid #e6f3f8}
+.small{font-size:0.9rem;color:#4f6b7a}
 </style>
 </head>
 <body>
 <header>SAI — Smart Academic Institutions (Student)</header>
 <div class="wrap">
 
-  <!-- DEMO -->
   <div class="card" id="demoCard">
-    <h3>🎓 Book Demo Class</h3>
-    <p class="muted">Timing: <b>4:30 PM — 6:30 PM</b> (choose any date from 2025)</p>
-    <label>Choose date</label>
-    <input type="date" id="demoDate" min="2025-01-01">
-    <div style="margin-top:12px">
+    <h3>Book Demo Class</h3>
+    <div class="small">Timing: <b>4:30 PM — 6:30 PM</b></div>
+    <label>Pick a date:</label>
+    <input id="demoDate" type="date" min="2025-01-01">
+    <div style="margin-top:8px">
       <button onclick="bookDemo()">Book Demo</button>
-      <button class="ghost" onclick="showLogin()">Already booked? Login</button>
+      <button class="ghost" onclick="openLogin()">Already booked? Login</button>
     </div>
-    <p id="demoMsg" class="muted"></p>
+    <p id="demoMsg" class="small"></p>
   </div>
 
-  <!-- LOGIN -->
   <div class="card hidden" id="loginCard">
     <h3>Join SAI — Login</h3>
-    <label>Your name</label>
-    <input id="stuName" placeholder="Full name">
-    <label>Select Grade</label>
-    <select id="stuGrade">
-      <option value="">-- Grade --</option>
-      <!-- 1..10 -->
-      <script>for(let g=1;g<=10;g++){document.write(`<option value="${g}">Grade ${g}</option>`)};</script>
-    </select>
-    <div style="margin-top:12px">
-      <button onclick="studentLogin()">Create & Continue</button>
-    </div>
-    <p id="loginMsg" class="muted"></p>
+    <label>Your full name</label>
+    <input id="stuName" placeholder="e.g. Ananya Sharma">
+    <label>Grade</label>
+    <select id="stuGrade"></select>
+    <div style="margin-top:8px"><button onclick="studentLogin()">Create Account</button></div>
+    <p id="loginMsg" class="small"></p>
   </div>
 
-  <!-- MAIN UI: worksheets + AI + Meet -->
   <div class="card hidden" id="mainCard">
     <div style="display:flex;justify-content:space-between;align-items:center">
       <div>
-        <h3 id="welcomeTitle">Welcome</h3>
-        <div class="muted">Status: <span id="statusBadge" class="badge">Not Paid</span> — Code: <span id="studentCode">—</span></div>
+        <h3 id="welcome">Welcome</h3>
+        <div class="small">Status: <span id="statusBadge" class="badge">Not Paid</span> • Code: <span id="studentCode">—</span></div>
       </div>
-      <div class="muted">Demo date: <span id="demoDateShow">—</span></div>
+      <div class="small">Demo: <span id="demoShow">—</span></div>
     </div>
 
-    <hr style="margin:12px 0">
+    <hr>
 
     <div class="row">
-      <!-- Left: worksheets -->
       <div class="col">
-        <div style="display:flex;gap:8px;align-items:center;">
-          <label style="margin:0">Select Grade</label>
-          <select id="gradeSelect" onchange="renderSubjects()"></select>
+        <div style="display:flex;gap:8px;align-items:center">
+          <label style="margin:0">Grade</label>
+          <select id="gradeSelect" onchange="onGradeChange()"></select>
           <label style="margin:0">Subject</label>
           <select id="subjectSelect" onchange="renderWorksheet()"></select>
         </div>
 
-        <div id="worksheetArea" style="margin-top:12px"></div>
+        <div id="worksheetArea" class="work-area"></div>
       </div>
 
-      <!-- Right: meet + small info -->
       <div class="sidebar">
         <div class="card">
-          <h4>📹 SAI Meet</h4>
-          <p class="muted">Room: <b>SAI2025MEET</b></p>
-          <div style="display:flex;gap:8px;margin-bottom:8px">
+          <h4>SAI Meet</h4>
+          <div style="display:flex;gap:8px">
             <button onclick="joinMeet()">Join Meet</button>
             <button class="ghost" onclick="leaveMeet()">Leave</button>
           </div>
-          <div id="meetContainer"></div>
-          <p class="muted" style="margin-top:6px">Phone join: <a href="tel:+911234567896">+91 1234567896</a></p>
+          <div id="meetContainer" style="margin-top:8px"></div>
+          <div class="small" style="margin-top:8px">Phone join: <a href="tel:+911234567896">+91 1234567896</a></div>
         </div>
 
         <div class="card" style="margin-top:12px">
-          <h4>My Bookings</h4>
-          <div class="muted">Name: <span id="showName">—</span></div>
-          <div class="muted">Code: <span id="showCode">—</span></div>
-          <div class="muted">Grade: <span id="showGrade">—</span></div>
-          <div style="margin-top:8px"><button onclick="openChatModal()">Ask SAI (Help)</button></div>
+          <h4>My Info</h4>
+          <div class="small">Name: <span id="infoName">—</span></div>
+          <div class="small">Grade: <span id="infoGrade">—</span></div>
+          <div style="margin-top:8px"><button onclick="openChatModal()">Ask SAI (help)</button></div>
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- floating SAI button -->
+<!-- floating -->
 <div class="floating-sai" title="Ask SAI" onclick="openChatModal()">SAI</div>
 
-<!-- Chat / Help modal -->
+<!-- chat modal -->
 <div id="chatModal" class="chat-modal hidden" role="dialog" aria-hidden="true">
-  <h4 style="margin:6px 0">SAI Help & Chat</h4>
+  <h4 style="margin:6px 0">SAI Help</h4>
   <div id="chatWindow" class="chat-window"></div>
   <div style="margin-top:8px;display:flex;gap:8px">
-    <input id="helpInput" placeholder="Ask for help or 'give me my code'">
+    <input id="helpInput" placeholder="Ask for hint or 'give me my code'">
     <button onclick="sendHelp()">Send</button>
   </div>
   <div style="margin-top:8px"><button class="ghost" onclick="closeChatModal()">Close</button></div>
 </div>
 
 <script>
-/* Data structures in localStorage:
- - sai_students: [{name,code,grade,date,status,isSAIStudent,joinedAt}]
- - sai_chats: { code: [ {from:'user'|'ai'|'admin', text, ts} ] }
- - sai_help_requests: [ {id, code, name, grade, subject, qid, questionText, status:'open'|'answered', adminReply } ]
- - sai_meet_joins: [{code,name,ts}]
- - worksheets: embedded in code below
+/* ===== Data & storage helpers =====
+Keys:
+- sai_students
+- sai_chats
+- sai_help_requests
+- sai_meet_joins
+Worksheets generated programmatically (20 Qs per subject).
 */
-
-// --- worksheets: small sample Qs for each subject/grade
-const WORKSHEETS = (function(){
-  const common = {
-    1: { subjects:['English','Mathematics','Science','Social Studies','General Knowledge'] },
-    2: { subjects:['English','Mathematics','Science','Social Studies','General Knowledge'] },
-    3: { subjects:['English','Mathematics','Science','Social Studies','General Knowledge'] },
-    4: { subjects:['English','Mathematics','Science','Social Studies','General Knowledge'] },
-    5: { subjects:['English','Mathematics','Science','Social Studies','General Knowledge'] },
-    6: { subjects:['English','Mathematics','Physics','Chemistry','Biology','History & Civics','Geography'] },
-    7: { subjects:['English','Mathematics','Physics','Chemistry','Biology','History & Civics','Geography'] },
-    8: { subjects:['English','Mathematics','Physics','Chemistry','Biology','History & Civics','Geography'] },
-    9: { subjects:['English','Mathematics','Physics','Chemistry','Biology','History & Civics','Geography'] },
-    10:{ subjects:['English','Mathematics','Physics','Chemistry','Biology','History & Civics','Geography'] }
-  };
-  // For brevity include 3 questions per subject with answers and step-by-step answers for admin to send.
-  function q(id,text,answer,steps){ return {id,text,answer,steps}; }
-  const sheets = {};
-  for(let g=1; g<=10; g++){
-    sheets[g] = {};
-    common[g].subjects.forEach(sub=>{
-      sheets[g][sub]=[
-        q('q1', `Sample Q1 for Grade ${g} ${sub}`, `Ans1-${g}-${sub}`, `Step-by-step answer for Q1 of ${sub}`),
-        q('q2', `Sample Q2 for Grade ${g} ${sub}`, `Ans2-${g}-${sub}`, `Step-by-step answer for Q2 of ${sub}`),
-        q('q3', `Sample Q3 for Grade ${g} ${sub}`, `Ans3-${g}-${sub}`, `Step-by-step answer for Q3 of ${sub}`),
-      ];
-    });
-  }
-  return sheets;
-})();
-
-// localStorage helpers
 const LS = {
   students(){return JSON.parse(localStorage.getItem('sai_students')||'[]')},
   setStudents(v){localStorage.setItem('sai_students',JSON.stringify(v))},
@@ -188,173 +136,250 @@ const LS = {
   setMeets(v){localStorage.setItem('sai_meet_joins',JSON.stringify(v))}
 };
 
-// small util
-function generateCode(){ return 'DA'+Math.floor(Math.random()*90000+10000); }
-function nowTS(){ return Date.now(); }
-function el(id){return document.getElementById(id)}
+// Subjects by grade
+const SUBJECTS = {
+  1:['English','Mathematics','Science','Social Studies','General Knowledge'],
+  2:['English','Mathematics','Science','Social Studies','General Knowledge'],
+  3:['English','Mathematics','Science','Social Studies','General Knowledge'],
+  4:['English','Mathematics','Science','Social Studies','General Knowledge'],
+  5:['English','Mathematics','Science','Social Studies','General Knowledge'],
+  6:['English','Mathematics','Physics','Chemistry','Biology','History & Civics','Geography'],
+  7:['English','Mathematics','Physics','Chemistry','Biology','History & Civics','Geography'],
+  8:['English','Mathematics','Physics','Chemistry','Biology','History & Civics','Geography'],
+  9:['English','Mathematics','Physics','Chemistry','Biology','History & Civics','Geography'],
+ 10:['English','Mathematics','Physics','Chemistry','Biology','History & Civics','Geography']
+};
 
-// --- Demo booking ---
+// deterministic question/answer generator: returns 20 Qs per subject per grade
+function generateWorksheet(grade,subject){
+  // Use templates per subject; produce exactly 20 items with id, type, text, answer, steps
+  const qs=[];
+  let i=1;
+  while(qs.length<20){
+    const id = `${grade}_${subject.replace(/\s+/g,'')}_q${i}`;
+    let q={}, n=i;
+    if(subject==='Mathematics'){
+      // mix: arithmetic, fractions, basic algebra for higher grades
+      if(grade<=3){
+        q.type='short'; q.text=`What is ${n+1} + ${n+2}?`; q.answer=(n+1)+(n+2);
+        q.steps=`Add ${n+1} and ${n+2}: ${q.answer}.`;
+      } else if(grade<=5){
+        q.type = (i%3===0)?'word':'short';
+        q.text = (i%3===0)?`If you have ${n*2} apples and give away ${n}, how many left?`:`Calculate ${n*3} - ${n+1}.`;
+        q.answer = (i%3===0)? (n*2 - n) : (n*3 - (n+1));
+        q.steps = `Compute: ${q.answer}.`;
+      } else {
+        // grade 6-10: include multiplication, division, simple algebra
+        if(i%4===0){
+          q.type='algebra'; q.text=`Solve for x: ${n}x + ${n} = ${n*3}`; q.answer=(n*2)/n; q.answer = 2;
+          q.steps=`${n}x + ${n} = ${n*3}. Subtract ${n}: ${n}x = ${n*2}. So x = ${ (n*2)/n }`;
+        } else {
+          q.type='short'; q.text=`Calculate ${n*6} ÷ ${n+1}`; q.answer=(n*6)/(n+1); q.steps=`Divide ${n*6} by ${n+1}: result ${q.answer}.`;
+        }
+      }
+    } else if(subject==='English'){
+      if(grade<=3){
+        q.type='short'; q.text=`Fill in the blank: "The cat ___ on the mat." (sit/sits)`; q.answer='sits'; q.steps=`Subject 'cat' (singular) takes 'sits'.`;
+      } else if(grade<=5){
+        q.type='short'; q.text=`Make plural: ${['box','lady','toy'][i%3]}`; q.answer = (['box','lady','toy'][i%3]==='lady')?'ladies':(['box','lady','toy'][i%3]+'s'); q.steps=`Apply plural rules.`; 
+      } else {
+        q.type='short'; q.text=`Identify the tense: "She had finished her homework before dinner."`; q.answer='past perfect'; q.steps=`'had finished' indicates past perfect tense.`;
+      }
+    } else if(subject==='Science' || subject==='Physics' || subject==='Chemistry' || subject==='Biology'){
+      // general science templates
+      if(grade<=5){
+        q.type='short'; q.text=`What does a plant need to make food?`; q.answer='sunlight, water, air, soil'; q.steps=`Photosynthesis needs sunlight, water and CO2.`;
+      } else {
+        // grade 6+ detailed
+        if(subject==='Physics'){
+          q.type='short'; q.text=`State the unit of force.`; q.answer='Newton (N)'; q.steps=`Force unit is Newton, defined as kg·m/s².`;
+        } else if(subject==='Chemistry'){
+          q.type='short'; q.text=`What is the symbol for Sodium?`; q.answer='Na'; q.steps=`Sodium chemical symbol is Na.`;
+        } else if(subject==='Biology'){
+          q.type='short'; q.text=`What is the basic unit of life?`; q.answer='Cell'; q.steps=`Cell is the structural and functional unit of life.`;
+        } else {
+          q.type='short'; q.text=`Name one source of energy.`; q.answer='Sun'; q.steps=`Sun is primary source of energy for Earth.`;
+        }
+      }
+    } else if(subject==='Social Studies' || subject==='History & Civics' || subject==='Geography'){
+      if(grade<=5){
+        q.type='short'; q.text=`Which is the capital city of India?`; q.answer='New Delhi'; q.steps=`New Delhi is the national capital of India.`;
+      } else {
+        if(subject==='Geography'){
+          q.type='short'; q.text=`Define 'latitude'.`; q.answer='distance north/south of Equator'; q.steps=`Latitude measures distance north or south of the Equator in degrees.`;
+        } else {
+          q.type='short'; q.text=`What is democracy? (short)`; q.answer='government by the people'; q.steps=`Democracy means rule by the people, through elections.`;
+        }
+      }
+    } else if(subject==='General Knowledge'){
+      q.type='short'; q.text=`Who is the current Prime Minister of India? (as of 2025)`; q.answer='(Varies)'; q.steps=`Check latest; this is a placeholder for GK.`;
+    } else {
+      q.type='short'; q.text=`Sample Q`; q.answer='Sample A'; q.steps='Sample steps';
+    }
+
+    qs.push({id, type:q.type, text:q.text, answer: String(q.answer), steps:q.steps});
+    i++;
+  }
+  return qs;
+}
+
+// ===== App state =====
+let currentStudent = null; // {name,code,grade,date,status,...}
+function openLogin(){ document.getElementById('loginCard').classList.remove('hidden'); }
 function bookDemo(){
-  const date = el('demoDate').value;
-  if(!date){ alert('Pick a date'); return; }
-  localStorage.setItem('sai_demo_date', date);
-  el('demoMsg').innerText = `🎉 Demo booked for ${date}. Click "Already booked? Login" or continue.`;
-  setTimeout(()=>showLogin(),600);
+  const dt = document.getElementById('demoDate').value;
+  if(!dt){ alert('Pick a date'); return;}
+  localStorage.setItem('sai_demo_date', dt);
+  document.getElementById('demoMsg').innerText = `Demo booked on ${dt}`;
+  setTimeout(()=>openLogin(),600);
 }
-function showLogin(){ el('loginCard').classList.remove('hidden'); }
 
-// --- Student create/login ---
-let current = null;
+// populate grade select
+(function init(){
+  const sel= document.getElementById('stuGrade');
+  for(let g=1; g<=10; g++){ sel.innerHTML += `<option value="${g}">Grade ${g}</option>`; }
+})();
+
 function studentLogin(){
-  const name = el('stuName').value.trim();
-  const grade = el('stuGrade').value;
-  const date = localStorage.getItem('sai_demo_date') || el('demoDate').value;
+  const name = document.getElementById('stuName').value.trim();
+  const grade = document.getElementById('stuGrade').value;
   if(!name || !grade){ alert('Enter name and grade'); return; }
+  // store student
   const students = LS.students();
-  let uniqueName = name;
-  // avoid identical names: append count
-  let count=1; while(students.find(s=>s.name===uniqueName)){ count++; uniqueName = name + ' ' + count; }
-  const code = generateCode();
-  const student = {name:uniqueName, code, grade, date, status:'Not Paid', isSAIStudent:false, joinedAt:null};
-  students.push(student); LS.setStudents(students);
-  // ensure chat object
-  const chats = LS.chats(); chats[code]=chats[code]||[]; LS.setChats(chats);
-  current = student;
-  postLoginUI();
-  // notify admin (storage event)
-  localStorage.setItem('sai_event','student_created_'+nowTS());
+  // ensure unique name
+  let uname = name; let idx=1;
+  while(students.find(s=>s.name===uname)) { idx++; uname = name + ' ' + idx; }
+  const code = generateStudentCode();
+  const date = localStorage.getItem('sai_demo_date') || null;
+  const st = {name:uname, code, grade, date, status:'Not Paid', isSAIStudent:false, joinedAt:null};
+  students.push(st); LS.setStudents(students);
+  // chats placeholder
+  const chats = LS.chats(); chats[code] = chats[code] || []; LS.setChats(chats);
+  // set current
+  currentStudent = st;
+  showMainUI();
+  localStorage.setItem('sai_event','student_created_'+Date.now());
 }
+function generateStudentCode(){ return 'DA'+Math.floor(Math.random()*90000+10000); }
 
-function postLoginUI(){
-  el('demoCard').classList.add('hidden'); el('loginCard').classList.add('hidden'); el('mainCard').classList.remove('hidden');
-  el('welcomeTitle').innerText = `Welcome, ${current.name}`;
-  el('statusBadge').innerText = current.status;
-  el('studentCode').innerText = current.code;
-  el('demoDateShow').innerText = current.date || '—';
-  el('showName').innerText = current.name; el('showCode').innerText = current.code; el('showGrade').innerText = 'Grade '+current.grade;
-  // populate grade/subject selectors
-  const gradeSel = el('gradeSelect'); gradeSel.innerHTML='';
-  for(let g=1;g<=10;g++){ gradeSel.innerHTML += `<option value="${g}">Grade ${g}</option>`; }
-  gradeSel.value = current.grade;
+function showMainUI(){
+  document.getElementById('demoCard').classList.add('hidden');
+  document.getElementById('loginCard').classList.add('hidden');
+  document.getElementById('mainCard').classList.remove('hidden');
+  document.getElementById('welcome').innerText = `Welcome, ${currentStudent.name}`;
+  document.getElementById('statusBadge').innerText = currentStudent.status;
+  document.getElementById('studentCode').innerText = currentStudent.code;
+  document.getElementById('demoShow').innerText = currentStudent.date || '—';
+  document.getElementById('infoName').innerText = currentStudent.name;
+  document.getElementById('infoGrade').innerText = 'Grade '+currentStudent.grade;
+  // populate grade & subject selects
+  const gsel = document.getElementById('gradeSelect'); gsel.innerHTML='';
+  for(let g=1; g<=10; g++){ gsel.innerHTML += `<option value="${g}">Grade ${g}</option>`; }
+  gsel.value = currentStudent.grade;
   renderSubjects();
-  // listen storage updates
-  window.addEventListener('storage', onStorageEvent);
+  window.addEventListener('storage', onStorage);
   renderChatWindow();
 }
 
-// --- subjects & worksheets rendering
+function onGradeChange(){ renderSubjects(); renderWorksheet(); }
 function renderSubjects(){
-  const g = el('gradeSelect').value || current.grade;
-  const subs = Object.keys(WORKSHEETS[g]);
-  const ss = el('subjectSelect'); ss.innerHTML=''; subs.forEach(s=> ss.innerHTML += `<option value="${s}">${s}</option>`);
+  const grade = document.getElementById('gradeSelect').value || currentStudent.grade;
+  const subs = SUBJECTS[grade];
+  const ssel = document.getElementById('subjectSelect'); ssel.innerHTML='';
+  subs.forEach(s=> ssel.innerHTML += `<option value="${s}">${s}</option>`);
   renderWorksheet();
 }
+
 function renderWorksheet(){
-  const g = el('gradeSelect').value || current.grade;
-  const sub = el('subjectSelect').value;
-  const list = WORKSHEETS[g][sub] || [];
-  const area = el('worksheetArea'); area.innerHTML = `<h4>Grade ${g} — ${sub}</h4>`;
-  list.forEach((q, idx)=>{
+  const grade = document.getElementById('gradeSelect').value || currentStudent.grade;
+  const subject = document.getElementById('subjectSelect').value;
+  const area = document.getElementById('worksheetArea');
+  area.innerHTML = `<h4>Grade ${grade} — ${subject}</h4><div class="small">20 questions. Use SAI for hints (press SAI circle). For full step solutions ask Admin.</div>`;
+  const ws = generateWorksheet(grade,subject);
+  ws.forEach((q, idx)=>{
     area.innerHTML += `
-      <div class="question" id="q_${q.id}_${idx}">
-        <div><b>Q${idx+1}:</b> ${q.text}</div>
-        <div style="margin-top:8px">
-          <button class="btn-small" onclick="requestHelp('${q.id}','${g}','${sub}',${idx})">Ask SAI for help on this Q</button>
-          <button class="btn-small ghost" onclick="showAnswer('${g}','${sub}',${idx})">Show Answer (for self-check)</button>
+      <div class="question" id="q_${q.id}">
+        <div><b>Q${idx+1}.</b> ${q.text}</div>
+        <div class="q-actions">
+          <button class="btn-small" onclick="requestHelp('${q.id}','${grade}','${subject}',${idx})">Ask SAI (hint)</button>
+          <button class="btn-small ghost" onclick="showLocalAnswer('${grade}','${subject}',${idx})">Show Answer (self-check)</button>
         </div>
-        <div id="ans_${q.id}_${idx}" class="answers hidden"></div>
+        <div id="ans_${q.id}" class="small hidden"></div>
       </div>`;
   });
 }
 
-// show answer locally (student can view; admin will also have full answers)
-function showAnswer(g,sub,idx){
-  const q = WORKSHEETS[g][sub][idx];
-  const elAns = document.getElementById(`ans_${q.id}_${idx}`);
-  elAns.innerHTML = `<b>Answer:</b> ${q.answer} <br><b>Steps:</b> ${q.steps}`;
+// show student self-check answer (brief)
+function showLocalAnswer(grade,subject,idx){
+  const ws = generateWorksheet(grade,subject);
+  const q = ws[idx];
+  const elAns = document.getElementById('ans_'+q.id);
+  elAns.innerHTML = `<b>Answer:</b> ${q.answer}`;
   elAns.classList.remove('hidden');
 }
 
-// --- help request flow (from student)
-function requestHelp(qid, grade, subject, qidx){
-  if(!current){ alert('Please login first'); return; }
-  const q = WORKSHEETS[grade][subject][qidx];
-  const reqs = LS.help();
-  const req = {id:'HR'+nowTS(), code:current.code, name:current.name, grade, subject, qid:qid+'_'+qidx, qtext:q.text, status:'open', adminReply:null, ts:nowTS()};
-  reqs.push(req); LS.setHelp(reqs);
-  // post a chat message so admin preview sees it
-  const chats = LS.chats(); chats[current.code] = chats[current.code]||[]; chats[current.code].push({from:'user', text:`Help requested on ${subject} - ${q.text}`, ts:nowTS()}); LS.setChats(chats);
-  localStorage.setItem('sai_event','help_req_'+nowTS());
-  alert('Help request sent to Admin. They will reply with step-by-step solution.');
-  renderChatWindow();
-}
-
-// --- chat modal
-function openChatModal(){ el('chatModal').classList.remove('hidden'); renderChatWindow(); }
-function closeChatModal(){ el('chatModal').classList.add('hidden'); }
+// --- chat/help modal
+function openChatModal(){ document.getElementById('chatModal').classList.remove('hidden'); renderChatWindow(); }
+function closeChatModal(){ document.getElementById('chatModal').classList.add('hidden'); }
 function sendHelp(){
-  const text = el('helpInput').value.trim();
-  if(!text){ alert('Type your help request'); return; }
-  // push to chats and help queue as generic question
-  const chats = LS.chats(); chats[current.code]=chats[current.code]||[]; chats[current.code].push({from:'user', text, ts:nowTS()}); LS.setChats(chats);
-  // also create a help request entry (admin will reply)
-  const reqs = LS.help(); reqs.push({id:'HR'+nowTS(), code:current.code, name:current.name, grade:current.grade, subject:'General', qid:null, qtext:text, status:'open', adminReply:null, ts:nowTS()}); LS.setHelp(reqs);
-  localStorage.setItem('sai_event','help_sent_'+nowTS());
-  el('helpInput').value=''; renderChatWindow(); alert('Help request sent to Admin');
+  const text = document.getElementById('helpInput').value.trim();
+  if(!text) return alert('Type a question');
+  const code = currentStudent.code;
+  const chats = LS.chats(); chats[code]=chats[code]||[]; chats[code].push({from:'user', text, ts:Date.now()}); LS.setChats(chats);
+  const help = LS.help(); help.push({id:'HR'+Date.now(), code, name:currentStudent.name, grade:currentStudent.grade, subject:'General', qtext:text, status:'open', adminReply:null, ts:Date.now()}); LS.setHelp(help);
+  localStorage.setItem('sai_event','help_sent_'+Date.now());
+  document.getElementById('helpInput').value=''; renderChatWindow(); alert('Help request sent to Admin.');
 }
 
-// render chat window for student
+// request help for a specific question (hint mode)
+function requestHelp(qid, grade, subject, qidx){
+  if(!currentStudent) return alert('Please login');
+  // create help request with context
+  const ws = generateWorksheet(grade,subject);
+  const q = ws[qidx];
+  const helpReq = LS.help(); helpReq.push({id:'HR'+Date.now(), code:currentStudent.code, name:currentStudent.name, grade, subject, qid, qtext:q.text, status:'open', adminReply:null, ts:Date.now()}); LS.setHelp(helpReq);
+  // append chat user message
+  const chats = LS.chats(); chats[currentStudent.code]=chats[currentStudent.code]||[]; chats[currentStudent.code].push({from:'user', text:`Help request on ${subject}: ${q.text}`, ts:Date.now()}); LS.setChats(chats);
+  localStorage.setItem('sai_event','help_req_'+Date.now());
+  // immediate hint from local SAI: hints only (if Paid -> richer hints)
+  let hint = 'Try breaking the problem into smaller steps.';
+  const students = LS.students(); const s = students.find(x=>x.code===currentStudent.code);
+  if(s && s.status==='Paid'){ hint = 'Start by writing known values. Then apply formulas step by step.'; }
+  const chats2 = LS.chats(); chats2[currentStudent.code].push({from:'ai', text: 'SAI hint: '+hint, ts:Date.now()}); LS.setChats(chats2);
+  renderChatWindow();
+  alert('A hint has been added. Admin will send full steps.');
+}
+
+// render student's chat window
 function renderChatWindow(){
-  const cw = el('chatWindow');
-  cw.innerHTML='';
-  if(!current) return;
-  const chats = LS.chats()[current.code] || [];
-  chats.forEach(m=>{
-    const d = document.createElement('div'); d.className = 'msg ' + (m.from==='user' ? 'user' : 'ai'); d.innerText = m.text; cw.appendChild(d);
-  });
-  // also show answered help requests (admin replies saved to help list and also appended to chats by admin)
-  const helpList = LS.help().filter(h=>h.code===current.code && h.status==='answered');
-  helpList.forEach(h=>{
-    const d = document.createElement('div'); d.className='msg ai'; d.innerText = 'Admin solution: ' + h.adminReply; cw.appendChild(d);
-  });
-  cw.scrollTop = cw.scrollHeight;
+  const win = document.getElementById('chatWindow'); win.innerHTML='';
+  if(!currentStudent) return;
+  const chats = LS.chats()[currentStudent.code] || [];
+  chats.forEach(m=>{ const d=document.createElement('div'); d.className='msg '+(m.from==='user'?'user':'ai'); d.innerText=m.text; win.appendChild(d); });
+  // also show admin answered help requests
+  const helpAnswered = LS.help().filter(h=>h.code===currentStudent.code && h.status==='answered');
+  helpAnswered.forEach(h=>{ const d=document.createElement('div'); d.className='msg ai'; d.innerText = 'Admin: ' + h.adminReply; win.appendChild(d); });
+  win.scrollTop = win.scrollHeight;
 }
 
-// --- Meet
+// Meet
 function joinMeet(){
-  if(!current){ alert('Login first'); return; }
-  // log join
-  const joins = LS.meets(); joins.push({code:current.code, name:current.name, ts:nowTS()}); LS.setMeets(joins);
-  localStorage.setItem('sai_event','meet_join_'+nowTS());
-  // embed jitsi iframe
-  el('meetContainer').innerHTML = `<iframe class="meet-frame" src="https://meet.jit.si/SAI2025MEET" allow="camera; microphone; fullscreen" style="width:100%;height:360px;border:1px solid #e6f3f8;border-radius:8px"></iframe>`;
-  // update joinedAt in students
-  const students = LS.students(); const s = students.find(x=>x.code===current.code); if(s){ s.joinedAt = nowTS(); LS.setStudents(students); localStorage.setItem('sai_event','student_joined_'+nowTS()); }
+  if(!currentStudent) return alert('Login first');
+  // record join
+  const joins = LS.meets(); joins.push({code:currentStudent.code, name:currentStudent.name, ts:Date.now()}); LS.setMeets(joins);
+  localStorage.setItem('sai_event','meet_join_'+Date.now());
+  document.getElementById('meetContainer').innerHTML = `<iframe class="meet-frame" src="https://meet.jit.si/SAI2025MEET" allow="camera; microphone; fullscreen"></iframe>`;
+  // update student joinedAt
+  const students = LS.students(); const s = students.find(x=>x.code===currentStudent.code); if(s){ s.joinedAt = Date.now(); LS.setStudents(students); localStorage.setItem('sai_event','student_joined_'+Date.now()); }
 }
-function leaveMeet(){ el('meetContainer').innerHTML=''; }
+function leaveMeet(){ document.getElementById('meetContainer').innerHTML=''; }
 
-// storage event to pick up admin replies/help answers or status change
-function onStorageEvent(e){
-  // re-load students and update badge
-  if(!current) return;
-  const students = LS.students(); const s = students.find(x=>x.code===current.code);
-  if(s){ current = s; el('statusBadge').innerText = s.status; el('statusBadge').style.background = s.status==='Paid' ? '#e8fffb' : '#fff2f0'; renderChatWindow(); }
-  // if admin answered a help request, it will be in LS.help with status answered. renderChatWindow will show it.
-}
+// storage listener to update status/chat if admin changes things
+window.addEventListener('storage', function(){ if(!currentStudent) return; const students = LS.students(); const s = students.find(x=>x.code===currentStudent.code); if(s){ currentStudent=s; document.getElementById('statusBadge').innerText=s.status; renderChatWindow(); } });
 
-// initialize if already created student on this browser
-(function initRestore(){
-  const students = LS.students();
-  if(students.length){
-    // find last student created locally
-    const last = students[students.length-1];
-    // restore session for convenience
-    current = last;
-    postLoginUI();
-  } else {
-    // pre-fill grade selector in login card for convenience
-    for(let g=1;g<=10;g++){ el('stuGrade').innerHTML += `<option value="${g}">Grade ${g}</option>`; }
-  }
+// restore previous student if exists locally (convenience)
+(function restore(){
+  const st = LS.students(); if(st.length>0){ const last = st[st.length-1]; currentStudent=last; showMainUI(); }
 })();
 </script>
 </body>
