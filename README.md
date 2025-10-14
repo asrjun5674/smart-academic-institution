@@ -3,36 +3,46 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SAI AI Student App</title>
+<title>SAI Student App</title>
 <style>
-body {font-family:Arial,sans-serif;margin:0;padding:0;background:#f4f6f7;}
-header {background:#2471A3;color:white;padding:15px;text-align:center;font-size:24px;}
-button {cursor:pointer;border:none;border-radius:5px;padding:10px 15px;}
-#saiBtn {position:fixed;bottom:20px;right:20px;background:#E74C3C;color:white;border-radius:50%;width:70px;height:70px;font-weight:bold;font-size:14px;}
-#chatBox {display:none;position:fixed;bottom:100px;right:20px;width:350px;height:450px;background:white;border-radius:10px;box-shadow:0 0 10px rgba(0,0,0,0.2);display:flex;flex-direction:column;}
-#chatContent {flex:1;padding:10px;overflow:auto;}
-#chatInput {flex:1;padding:5px;}
+body{font-family:Arial,sans-serif;background:#f5f5f5;margin:0;padding:0;}
+header{background:#2E86C1;color:white;padding:15px;text-align:center;font-size:24px;}
+section{padding:20px;}
+button{cursor:pointer;border:none;padding:10px 20px;border-radius:5px;}
+#saiBtn{position:fixed;bottom:20px;right:20px;width:60px;height:60px;border-radius:50%;background:#E74C3C;color:white;font-weight:bold;}
+#chatBox{display:none;position:fixed;bottom:90px;right:20px;width:350px;height:450px;background:white;border-radius:10px;box-shadow:0 0 10px rgba(0,0,0,0.2);display:flex;flex-direction:column;}
+#chatContent{flex:1;padding:10px;overflow:auto;}
+#chatInput{flex:1;padding:5px;}
+iframe{border:none;border-radius:10px;}
 </style>
 </head>
 <body>
 
-<header>SAI - Smart Academic Institutions (Student)</header>
+<header>SAI Student App</header>
 
-<section style="padding:20px;">
-  <h2>Book Demo Class</h2>
-  <input type="text" id="studentName" placeholder="Enter your name">
-  <button onclick="bookDemo()">Book Demo</button>
-  <p id="demoMsg"></p>
-
-  <div id="loginSection" style="display:none;">
-    <h3>Login with your SAI Code</h3>
-    <input type="text" id="studentCode" placeholder="Enter your SAI Code">
-    <button onclick="login()">Login</button>
-    <p id="loginMsg"></p>
-  </div>
+<section id="demoSection">
+<h2>Book Demo Class</h2>
+<input type="text" id="studentName" placeholder="Enter your name">
+<input type="datetime-local" id="demoDate">
+<button onclick="bookDemo()">Book Demo</button>
+<p id="demoMsg"></p>
 </section>
 
-<button id="saiBtn" onclick="openChat()">SAI AI</button>
+<section id="loginSection" style="display:none;">
+<h2>Enter Access Code</h2>
+<input type="text" id="codeInput" placeholder="Enter your SAI Code">
+<button onclick="login()">Login</button>
+<p id="loginMsg"></p>
+</section>
+
+<section id="studentPanel" style="display:none;">
+<h2>Welcome, <span id="studentDisplay"></span></h2>
+
+<h3>SAI Meet</h3>
+<iframe src="https://meet.jit.si/SAI2025MEET" width="100%" height="400px" allow="camera; microphone; fullscreen"></iframe>
+</section>
+
+<button id="saiBtn" onclick="toggleChat()">SAI AI</button>
 <div id="chatBox">
   <div id="chatContent"></div>
   <div style="display:flex;">
@@ -41,79 +51,81 @@ button {cursor:pointer;border:none;border-radius:5px;padding:10px 15px;}
   </div>
 </div>
 
-<h2 style="padding:20px;">SAI Meet</h2>
-<iframe src="https://meet.jit.si/SAI2025MEET" width="100%" height="400px" allow="camera; microphone; fullscreen"></iframe>
-
 <script>
-const OPENAI_API_KEY = "YOUR_OPENAI_API_KEY"; // replace with your key
-let loggedStudent = null;
+let studentName = "";
+let studentCode = "";
 
-// --- BOOK DEMO ---
+// --- Book Demo ---
 function bookDemo(){
-  const name = document.getElementById("studentName").value.trim();
-  if(!name){ alert("Enter your name"); return; }
+  const name = document.getElementById('studentName').value.trim();
+  const demoDate = document.getElementById('demoDate').value;
+  if(!name || !demoDate){ alert("Enter name and date!"); return; }
 
-  let students = JSON.parse(localStorage.getItem("students")||"[]");
-  if(!students.find(s=>s.name===name)){
-    const code = "SAI" + Math.random().toString(36).substring(2,8).toUpperCase();
-    students.push({name, code, paid:false});
-    localStorage.setItem("students", JSON.stringify(students));
-    alert(`Demo booked for ${name}. Your unique SAI code will be given by Admin.`);
-  }
-  document.getElementById("demoMsg").innerText = "Demo booked successfully. Please wait for Admin approval.";
-  document.getElementById("loginSection").style.display = "block";
+  let demoRequests = JSON.parse(localStorage.getItem('demoRequests')||'[]');
+  demoRequests.push({name:name, date:demoDate});
+  localStorage.setItem('demoRequests', JSON.stringify(demoRequests));
+
+  document.getElementById('demoMsg').innerText = `Demo booked for ${name} on ${demoDate}. Wait for admin approval.`;
+  document.getElementById('demoSection').style.display='none';
+  document.getElementById('loginSection').style.display='block';
 }
 
-// --- LOGIN ---
+// --- Login ---
 function login(){
-  const code = document.getElementById("studentCode").value.trim();
-  const students = JSON.parse(localStorage.getItem("students")||"[]");
-  const student = students.find(s=>s.code===code && s.paid);
-  if(student){
-    loggedStudent = student;
-    document.getElementById("loginMsg").innerHTML = `Welcome ${student.name}! You can now use <b>SAI AI</b>.`;
-  }else{
-    document.getElementById("loginMsg").innerText = "Invalid or unpaid code. Contact Admin.";
+  const code = document.getElementById('codeInput').value.trim();
+  let studentCodes = JSON.parse(localStorage.getItem('studentCodes')||'{}');
+  let found = Object.entries(studentCodes).find(([n,c]) => c===code);
+  if(found){
+    studentName = found[0];
+    studentCode = code;
+    document.getElementById('studentDisplay').innerText = studentName;
+    document.getElementById('loginSection').style.display='none';
+    document.getElementById('studentPanel').style.display='block';
+  } else {
+    document.getElementById('loginMsg').innerText = "Invalid code. Contact admin.";
   }
 }
 
-// --- SAI AI CHAT ---
-function openChat(){
-  if(!loggedStudent){ alert("Please login first."); return; }
-  document.getElementById("chatBox").style.display = "flex";
+// --- SAI AI Chat ---
+function toggleChat(){
+  if(!studentName){ alert("Please login first!"); return; }
+  let box = document.getElementById('chatBox');
+  box.style.display = box.style.display==='flex'?'none':'flex';
 }
 
 async function sendQuestion(){
-  const input = document.getElementById("chatInput");
+  const input = document.getElementById('chatInput');
   const question = input.value.trim();
   if(!question) return;
-
-  const chatContent = document.getElementById("chatContent");
-  chatContent.innerHTML += `<p><b>${loggedStudent.name}:</b> ${question}</p>`;
+  const chatContent = document.getElementById('chatContent');
+  chatContent.innerHTML += `<p><b>${studentName}:</b> ${question}</p>`;
   input.value='';
 
-  // Notify Admin
-  let aiLogs = JSON.parse(localStorage.getItem("aiLogs")||"[]");
-  aiLogs.push({name:loggedStudent.name, question, time:new Date().toLocaleString()});
-  localStorage.setItem("aiLogs", JSON.stringify(aiLogs));
+  // --- Save question to logs ---
+  let aiLogs = JSON.parse(localStorage.getItem('aiLogs')||'[]');
+  aiLogs.push({name:studentName, question:question, time:new Date().toLocaleString()});
+  localStorage.setItem('aiLogs', JSON.stringify(aiLogs));
 
-  // OpenAI API call
-  chatContent.innerHTML += `<p><i>SAI AI is thinking...</i></p>`;
-  const response = await fetch("https://api.openai.com/v1/chat/completions", {
-    method:"POST",
-    headers:{
-      "Content-Type":"application/json",
-      "Authorization":`Bearer ${OPENAI_API_KEY}`
-    },
-    body:JSON.stringify({
-      model:"gpt-4o-mini",
-      messages:[{role:"system",content:"You are SAI AI, a helpful AI tutor by Smart Academic Institutions."},{role:"user",content:question}]
-    })
-  });
-  const data = await response.json();
-  const answer = data.choices?.[0]?.message?.content || "Sorry, I couldn’t fetch an answer.";
-  chatContent.innerHTML += `<p><b>SAI AI:</b> ${answer}</p>`;
-  chatContent.scrollTop = chatContent.scrollHeight;
+  // --- Call OpenAI GPT-5 API ---
+  try{
+    let response = await fetch('https://api.openai.com/v1/responses', {
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'Authorization':'Bearer YOUR_OPENAI_API_KEY'
+      },
+      body: JSON.stringify({
+        model: "gpt-5-mini",
+        input: question
+      })
+    });
+    let data = await response.json();
+    let answer = data.output_text || "SAI AI could not respond.";
+    chatContent.innerHTML += `<p><b>SAI AI:</b> ${answer}</p>`;
+  }catch(err){
+    chatContent.innerHTML += `<p><b>SAI AI:</b> Error contacting AI server.</p>`;
+    console.error(err);
+  }
 }
 </script>
 </body>
