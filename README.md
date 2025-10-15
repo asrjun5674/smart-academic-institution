@@ -12,7 +12,6 @@ button{cursor:pointer;border:none;padding:10px 20px;border-radius:5px;}
 #saiBtn{position:fixed;bottom:20px;right:20px;width:60px;height:60px;border-radius:50%;background:#E74C3C;color:white;font-weight:bold;}
 #chatBox{display:none;position:fixed;bottom:90px;right:20px;width:350px;height:450px;background:white;border-radius:10px;box-shadow:0 0 10px rgba(0,0,0,0.2);display:flex;flex-direction:column;}
 #chatContent{flex:1;padding:10px;overflow:auto;}
-#chatInput{flex:1;padding:5px;}
 iframe{border:none;border-radius:10px;}
 </style>
 </head>
@@ -55,22 +54,20 @@ iframe{border:none;border-radius:10px;}
 let studentName = "";
 let studentCode = "";
 
-// --- Book Demo ---
 function bookDemo(){
   const name = document.getElementById('studentName').value.trim();
   const demoDate = document.getElementById('demoDate').value;
   if(!name || !demoDate){ alert("Enter name and date!"); return; }
 
   let demoRequests = JSON.parse(localStorage.getItem('demoRequests')||'[]');
-  demoRequests.push({name:name, date:demoDate});
+  demoRequests.push({name:name, date:demoDate, approved:false, paid:false});
   localStorage.setItem('demoRequests', JSON.stringify(demoRequests));
 
-  document.getElementById('demoMsg').innerText = `Demo booked for ${name} on ${demoDate}. Wait for admin approval.`;
+  document.getElementById('demoMsg').innerHTML = `Demo booked for ${name} on ${demoDate}. Wait for admin approval.`;
+  alert("Demo booked successfully! Wait for admin approval.");
   document.getElementById('demoSection').style.display='none';
-  document.getElementById('loginSection').style.display='block';
 }
 
-// --- Login ---
 function login(){
   const code = document.getElementById('codeInput').value.trim();
   let studentCodes = JSON.parse(localStorage.getItem('studentCodes')||'{}');
@@ -82,7 +79,7 @@ function login(){
     document.getElementById('loginSection').style.display='none';
     document.getElementById('studentPanel').style.display='block';
   } else {
-    document.getElementById('loginMsg').innerText = "Invalid code. Contact admin.";
+    document.getElementById('loginMsg').innerHTML = "Invalid code or not approved yet.";
   }
 }
 
@@ -101,30 +98,28 @@ async function sendQuestion(){
   chatContent.innerHTML += `<p><b>${studentName}:</b> ${question}</p>`;
   input.value='';
 
-  // --- Save question to logs ---
-  let aiLogs = JSON.parse(localStorage.getItem('aiLogs')||'[]');
-  aiLogs.push({name:studentName, question:question, time:new Date().toLocaleString()});
-  localStorage.setItem('aiLogs', JSON.stringify(aiLogs));
+  chatContent.innerHTML += `<p><b>SAI AI:</b> Thinking...</p>`;
 
-  // --- Call OpenAI GPT-5 API ---
-  try{
-    let response = await fetch('https://api.openai.com/v1/responses', {
-      method:'POST',
-      headers:{
-        'Content-Type':'application/json',
-        'Authorization':'Bearer YOUR_OPENAI_API_KEY'
+  try {
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer YOUR_OPENAI_API_KEY"
       },
       body: JSON.stringify({
-        model: "gpt-5-mini",
-        input: question
+        model: "gpt-5",
+        messages: [
+          {role:"system",content:"You are SAI AI, a helpful study assistant that helps with all school subjects."},
+          {role:"user",content:question}
+        ]
       })
     });
-    let data = await response.json();
-    let answer = data.output_text || "SAI AI could not respond.";
+    const data = await response.json();
+    const answer = data.choices?.[0]?.message?.content || "Sorry, I couldn’t understand that.";
     chatContent.innerHTML += `<p><b>SAI AI:</b> ${answer}</p>`;
-  }catch(err){
-    chatContent.innerHTML += `<p><b>SAI AI:</b> Error contacting AI server.</p>`;
-    console.error(err);
+  } catch(e){
+    chatContent.innerHTML += `<p><b>SAI AI:</b> Error connecting to AI.</p>`;
   }
 }
 </script>
