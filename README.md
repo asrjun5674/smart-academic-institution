@@ -27,6 +27,11 @@ iframe{border:none;border-radius:10px;}
 <p id="demoMsg"></p>
 </section>
 
+<section id="waitingSection" style="display:none;">
+<h2>Waiting for Admin Approval...</h2>
+<p id="waitingMsg">Your demo request has been sent. Please wait until admin approves.</p>
+</section>
+
 <section id="loginSection" style="display:none;">
 <h2>Enter Access Code</h2>
 <input type="text" id="codeInput" placeholder="Enter your SAI Code">
@@ -36,7 +41,6 @@ iframe{border:none;border-radius:10px;}
 
 <section id="studentPanel" style="display:none;">
 <h2>Welcome, <span id="studentDisplay"></span></h2>
-
 <h3>SAI Meet</h3>
 <iframe src="https://meet.jit.si/SAI2025MEET" width="100%" height="400px" allow="camera; microphone; fullscreen"></iframe>
 </section>
@@ -53,6 +57,7 @@ iframe{border:none;border-radius:10px;}
 <script>
 let studentName = "";
 let studentCode = "";
+let demoCheckInterval;
 
 function bookDemo(){
   const name = document.getElementById('studentName').value.trim();
@@ -63,9 +68,23 @@ function bookDemo(){
   demoRequests.push({name:name, date:demoDate, approved:false, paid:false});
   localStorage.setItem('demoRequests', JSON.stringify(demoRequests));
 
-  document.getElementById('demoMsg').innerHTML = `Demo booked for ${name} on ${demoDate}. Wait for admin approval.`;
-  alert("Demo booked successfully! Wait for admin approval.");
   document.getElementById('demoSection').style.display='none';
+  document.getElementById('waitingSection').style.display='block';
+
+  // start checking for approval
+  studentName = name;
+  demoCheckInterval = setInterval(checkApproval, 5000);
+}
+
+function checkApproval(){
+  let demoRequests = JSON.parse(localStorage.getItem('demoRequests')||'[]');
+  let found = demoRequests.find(d=>d.name===studentName);
+  if(found && found.approved){
+    clearInterval(demoCheckInterval);
+    document.getElementById('waitingSection').style.display='none';
+    document.getElementById('loginSection').style.display='block';
+    alert("Admin approved you! Now you can log in with your name and code.");
+  }
 }
 
 function login(){
